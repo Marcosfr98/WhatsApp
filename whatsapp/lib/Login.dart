@@ -1,5 +1,8 @@
 import "package:flutter/material.dart";
 
+import 'Cadastro.dart';
+import 'Themes/Cores.dart';
+
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
 
@@ -11,13 +14,13 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: const Color(0xFF108650),
+        backgroundColor: Cores.verde_tom1,
         body: Container(
-          height: double.infinity,
-          width: double.infinity,
-          padding: const EdgeInsets.all(16),
-          child: Center(
-            child: SingleChildScrollView(
+            height: double.infinity,
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            child: Center(
+                child: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -25,14 +28,13 @@ class _LoginState extends State<Login> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 16),
                     child: Image.asset(
-                        width: 250,
-                        height: 250,
-                        "imagens/logo.png"
-                    ),
+                        width: 250, height: 250, "imagens/logo.png"),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 16),
                     child: TextField(
+                      //autofocus: true,
+                      keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
                           contentPadding: const EdgeInsets.all(20.0),
                           hintText: "E-mail",
@@ -70,16 +72,20 @@ class _LoginState extends State<Login> {
                       child: const Text("Entrar"),
                     ),
                   ),
-                  const Text(
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                      ),
-                      "Não tem uma conta? Cadastre-se!"),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (BuildContext context) => const Cadastro()));
+                    },
+                    child: const Text(
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                        ),
+                        "Não tem uma conta? Cadastre-se!"),
+                  ),
                 ],
               ),
-            )
-          )
-        ));
+            ))));
   }
 }
