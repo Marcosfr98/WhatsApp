@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import "package:flutter/material.dart";
 
-import 'RouteGenerator.dart';
+import 'routes/RouteGenerator.dart';
 import 'Themes/Cores.dart';
 import 'fragments/AbaContatos.dart';
 import 'fragments/AbaConversas.dart';
@@ -27,7 +27,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     FirebaseAuth auth = FirebaseAuth.instance;
     await auth.signOut();
     if(mounted){
-      Navigator.pushReplacementNamed(context, RouteGenerator.ROTA_HOME);
+      Navigator.pushReplacementNamed(context, RouteGenerator.ROTA_LOGIN);
     }
   }
 
@@ -61,7 +61,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 ],
                 onSelected: (value){
                   if(value == 'configuracao'){
-
+                    Navigator.pushNamed(context, RouteGenerator.ROTA_CONFIG);
                   }else if(value == "logout"){
                     _deslogarUsuario();
                   }

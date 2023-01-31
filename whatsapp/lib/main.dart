@@ -3,7 +3,7 @@ import "package:flutter/material.dart";
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import 'Login.dart';
-import 'RouteGenerator.dart';
+import 'routes/RouteGenerator.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

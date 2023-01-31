@@ -2,13 +2,15 @@ import "package:flutter/material.dart";
 import "package:whatsapp/Cadastro.dart";
 import "package:whatsapp/Home.dart";
 
-import "Login.dart";
+import '../Configuracao.dart';
+import '../Login.dart';
 
 class RouteGenerator {
 
   static const String ROTA_HOME = "/home";
   static const String ROTA_LOGIN = "/login";
   static const String ROTA_CADASTRO = "/cadastro";
+  static const String ROTA_CONFIG = "/config";
 
   static Route<dynamic>? generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -27,6 +29,10 @@ class RouteGenerator {
       case ROTA_HOME:
         return MaterialPageRoute(
           builder: (_) => const Home(),
+        );
+      case ROTA_CONFIG:
+        return MaterialPageRoute(
+          builder: (_) => const Configuracao(),
         );
       default:
         _erroRota();

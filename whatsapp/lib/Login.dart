@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import "package:flutter/material.dart";
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
-import 'RouteGenerator.dart';
+import 'routes/RouteGenerator.dart';
 import 'Themes/Cores.dart';
 import 'model/Usuario.dart';
 
