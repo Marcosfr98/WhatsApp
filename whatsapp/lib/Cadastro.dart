@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import "package:flutter/material.dart";
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import "package:cloud_firestore/cloud_firestore.dart";
 
+import 'RouteGenerator.dart';
 import 'Themes/Cores.dart';
 import 'model/Usuario.dart';
 
@@ -13,19 +15,18 @@ class Cadastro extends StatefulWidget {
 }
 
 class _CadastroState extends State<Cadastro> {
-
   final TextEditingController _controllerNome = TextEditingController();
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerSenha = TextEditingController();
 
-  _validarCampos(){
+  _validarCampos() {
     String nome = _controllerNome.text;
     String email = _controllerEmail.text;
     String senha = _controllerSenha.text;
 
-    if(nome.isEmpty || email.isEmpty || senha.isEmpty){
+    if (nome.isEmpty || email.isEmpty || senha.isEmpty) {
       EasyLoading.showError('Preencha todos os campos!');
-    }else{
+    } else {
       Usuario usuario = Usuario();
       usuario.nome = nome;
       usuario.email = email;
@@ -34,15 +35,19 @@ class _CadastroState extends State<Cadastro> {
     }
   }
 
-  _cadastrarUsuario(Usuario usuario){
-
+  _cadastrarUsuario(Usuario usuario) {
     FirebaseAuth auth = FirebaseAuth.instance;
 
-    auth.createUserWithEmailAndPassword(email: usuario.email, password: usuario.senha)
-    .then((firebaseUser){
-      EasyLoading.showSuccess("Sucesso ao cadastrar o usuário!");
-    })
-    .catchError((onError){
+    auth
+        .createUserWithEmailAndPassword(
+            email: usuario.email, password: usuario.senha)
+        .then((firebaseUser) {
+      //EasyLoading.showSuccess("Sucesso ao cadastrar o usuário!");
+      FirebaseFirestore db = FirebaseFirestore.instance;
+      db.collection("usuario").doc(auth.currentUser?.uid).set(usuario.toMap());
+      Navigator.pushNamedAndRemoveUntil(
+          context, RouteGenerator.ROTA_CADASTRO, (_) => false);
+    }).catchError((onError) {
       EasyLoading.showError("Erro ao cadastrar o usuário!");
     });
   }
@@ -64,7 +69,8 @@ class _CadastroState extends State<Cadastro> {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
-                  child: Image.asset(width: 250, height: 250, "imagens/usuario.png"),
+                  child: Image.asset(
+                      width: 250, height: 250, "imagens/usuario.png"),
                 ),
                 Padding(
                     padding: const EdgeInsets.only(bottom: 8),

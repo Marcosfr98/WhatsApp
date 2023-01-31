@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import "package:flutter/material.dart";
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
-import 'Cadastro.dart';
+import 'RouteGenerator.dart';
 import 'Themes/Cores.dart';
+import 'model/Usuario.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -11,6 +14,52 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  final TextEditingController _controllerEmail = TextEditingController();
+  final TextEditingController _controllerSenha = TextEditingController();
+
+  _validarCampos() {
+    String email = _controllerEmail.text;
+    String senha = _controllerSenha.text;
+    if (email.isEmpty || senha.isEmpty) {
+      EasyLoading.showError("Preencha todos os campos!");
+    } else {
+      Usuario usuario = Usuario();
+      usuario.email = email;
+      usuario.senha = senha;
+      _logarUsuario(usuario);
+    }
+  }
+
+  _logarUsuario(Usuario usuario) {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    auth
+        .signInWithEmailAndPassword(
+      email: usuario.email,
+      password: usuario.senha,
+    )
+        .then((firebaseUser) {
+      Navigator.pushReplacementNamed(context, RouteGenerator.ROTA_HOME);
+    }).catchError((onError) {
+      EasyLoading.showError("Erro ao fazer login! Por favor, tente novamente.");
+    });
+  }
+
+  Future _verificaUsuarioLogado() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? usuarioLogado = await auth.currentUser;
+    if (usuarioLogado != null) {
+      if(mounted){
+        Navigator.pushReplacementNamed(context, RouteGenerator.ROTA_HOME);
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    _verificaUsuarioLogado();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,6 +83,7 @@ class _LoginState extends State<Login> {
                     padding: const EdgeInsets.only(bottom: 16),
                     child: TextField(
                       //autofocus: true,
+                      controller: _controllerEmail,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
                           contentPadding: const EdgeInsets.all(20.0),
@@ -49,6 +99,7 @@ class _LoginState extends State<Login> {
                     padding: const EdgeInsets.only(bottom: 16),
                     child: TextField(
                       obscureText: true,
+                      controller: _controllerSenha,
                       decoration: InputDecoration(
                           contentPadding: const EdgeInsets.all(20.0),
                           hintText: "Senha",
@@ -62,7 +113,9 @@ class _LoginState extends State<Login> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 16),
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        _validarCampos();
+                      },
                       style: ElevatedButton.styleFrom(
                         shape: const StadiumBorder(),
                         backgroundColor: Colors.green,
@@ -74,8 +127,7 @@ class _LoginState extends State<Login> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (BuildContext context) => const Cadastro()));
+                      Navigator.pushReplacementNamed(context, RouteGenerator.ROTA_HOME);
                     },
                     child: const Text(
                         style: TextStyle(
