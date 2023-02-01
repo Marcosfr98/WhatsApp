@@ -1,9 +1,9 @@
 import "package:flutter/material.dart";
-import "package:whatsapp/Cadastro.dart";
-import "package:whatsapp/Home.dart";
 
-import '../Configuracao.dart';
-import '../Login.dart';
+import "../telas/Cadastro.dart";
+import "../telas/Configuracao.dart";
+import "../telas/Home.dart";
+import "../telas/Login.dart";
 
 class RouteGenerator {
 

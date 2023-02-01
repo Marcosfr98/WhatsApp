@@ -1,10 +1,11 @@
 import "package:firebase_storage/firebase_storage.dart";
+import 'package:cloud_firestore/cloud_firestore.dart';
 import "package:flutter/material.dart";
 import 'package:image_picker/image_picker.dart';
 import "package:firebase_auth/firebase_auth.dart";
 import "dart:io";
 
-import "Themes/Cores.dart";
+import '../Themes/Cores.dart';
 
 class Configuracao extends StatefulWidget {
   const Configuracao({Key? key}) : super(key: key);
@@ -18,17 +19,29 @@ class _ConfiguracaoState extends State<Configuracao> {
   final ImagePicker _picker = ImagePicker();
   late File? _imagem;
   String? _idUsuarioLogado;
+  bool _subindoImagem = false;
+  String? _urlImagemRecuperada;
 
   @override
   void initState() {
     super.initState();
     _recuperarDadosUsuario();
-    _nomeController.text = "Jamilton Damasceno";
   }
 
   _recuperarDadosUsuario() async {
     FirebaseAuth auth = FirebaseAuth.instance;
     _idUsuarioLogado = auth.currentUser?.uid;
+
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    DocumentSnapshot<Map<String, dynamic>> snapshot = await db.collection("usuarios").doc(_idUsuarioLogado).get();
+
+    Map<String, dynamic>? dados = snapshot.data();
+    setState(
+        (){
+          _nomeController.text = dados?["nome"];
+          _urlImagemRecuperada = dados?["urlImagem"];
+        }
+    );
   }
 
   Future _recuperarImagem(String origemImagem) async {
@@ -44,6 +57,7 @@ class _ConfiguracaoState extends State<Configuracao> {
     }
     setState(() {
       _imagem = File(imagemSelecionada!.path.toString());
+      _subindoImagem = true;
       if (_imagem != null) {
         _uploadImagem();
       }
@@ -53,7 +67,57 @@ class _ConfiguracaoState extends State<Configuracao> {
   Future _uploadImagem() async {
     FirebaseStorage storage = FirebaseStorage.instance;
     Reference pastaRaiz = storage.ref();
-    pastaRaiz.child("perfil").child("${_idUsuarioLogado}.jpg");
+    UploadTask uploadTask = pastaRaiz
+        .child("perfil")
+        .child("$_idUsuarioLogado.jpg")
+        .putFile(_imagem!);
+    uploadTask.snapshotEvents.listen((TaskSnapshot taskSnapshot) {
+      if (taskSnapshot.state == TaskState.running) {
+        setState(() {
+          _subindoImagem = true;
+        });
+      } else if (taskSnapshot.state == TaskState.success) {
+        setState(() {
+          _subindoImagem = false;
+        });
+      }
+    });
+    uploadTask.then((TaskSnapshot snapshot) {
+      _recuperarUrlImagem(snapshot);
+    }).catchError((Object e) {
+
+    });
+  }
+
+  _recuperarUrlImagem(TaskSnapshot snapshot) async {
+    String url = await snapshot.ref.getDownloadURL();
+    _atualizarUrlImageFirestore(url);
+    setState(
+        (){
+          _urlImagemRecuperada = url;
+        }
+    );
+  }
+
+  _atualizarUrlImageFirestore(String url){
+    FirebaseFirestore db = FirebaseFirestore.instance;
+
+    Map<String, dynamic> dadosAtualizar = {
+      "urlImagem": url
+    };
+
+    db.collection("usuarios").doc(_idUsuarioLogado).update(dadosAtualizar);
+  }
+
+   _atualizarNomeFirestore(){
+    String nome = _nomeController.text;
+    FirebaseFirestore db = FirebaseFirestore.instance;
+
+    Map<String, dynamic> dadosAtualizar = {
+      "nome": nome
+    };
+
+    db.collection("usuarios").doc(_idUsuarioLogado).update(dadosAtualizar);
   }
 
   @override
@@ -66,7 +130,14 @@ class _ConfiguracaoState extends State<Configuracao> {
         body: Center(
             child: SingleChildScrollView(
                 child: Column(children: [
-          const Icon(size: 300, Icons.person_pin),
+                  _subindoImagem
+                  ? const CircularProgressIndicator()
+                  : Container(),
+          CircleAvatar(
+            radius: 100,
+            backgroundColor: Colors.grey,
+            backgroundImage: _urlImagemRecuperada != null ? NetworkImage(_urlImagemRecuperada!) : null,
+          ),
           Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -105,7 +176,9 @@ class _ConfiguracaoState extends State<Configuracao> {
           ),
           const SizedBox(height: 8),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              _atualizarNomeFirestore();
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
               foregroundColor: Colors.white,

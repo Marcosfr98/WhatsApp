@@ -3,9 +3,9 @@ import "package:flutter/material.dart";
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import "package:cloud_firestore/cloud_firestore.dart";
 
-import 'routes/RouteGenerator.dart';
-import 'Themes/Cores.dart';
-import 'model/Usuario.dart';
+import '../routes/RouteGenerator.dart';
+import '../Themes/Cores.dart';
+import '../model/Usuario.dart';
 
 class Cadastro extends StatefulWidget {
   const Cadastro({Key? key}) : super(key: key);
@@ -32,6 +32,7 @@ class _CadastroState extends State<Cadastro> {
       usuario.email = email;
       usuario.senha = senha;
       _cadastrarUsuario(usuario);
+      Navigator.pushReplacementNamed(context, RouteGenerator.ROTA_HOME);
     }
   }
 
@@ -44,7 +45,7 @@ class _CadastroState extends State<Cadastro> {
         .then((firebaseUser) {
       //EasyLoading.showSuccess("Sucesso ao cadastrar o usuário!");
       FirebaseFirestore db = FirebaseFirestore.instance;
-      db.collection("usuario").doc(auth.currentUser?.uid).set(usuario.toMap());
+      db.collection("usuarios").doc(auth.currentUser?.uid).set(usuario.toMap());
       Navigator.pushNamedAndRemoveUntil(
           context, RouteGenerator.ROTA_CADASTRO, (_) => false);
     }).catchError((onError) {

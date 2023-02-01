@@ -2,9 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import "package:flutter/material.dart";
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
-import 'routes/RouteGenerator.dart';
-import 'Themes/Cores.dart';
-import 'model/Usuario.dart';
+import '../routes/RouteGenerator.dart';
+import '../themes/Cores.dart';
+import '../model/Usuario.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -125,16 +125,19 @@ class _LoginState extends State<Login> {
                       child: const Text("Entrar"),
                     ),
                   ),
-                  GestureDetector(
+                  InkWell(
                     onTap: () {
-                      Navigator.pushReplacementNamed(context, RouteGenerator.ROTA_HOME);
+                      Navigator.pushNamed(context, RouteGenerator.ROTA_CADASTRO);
                     },
-                    child: const Text(
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                        ),
-                        "Não tem uma conta? Cadastre-se!"),
+                    child: const Padding(
+                      padding: EdgeInsets.only(bottom: 8, top: 8),
+                      child: Text(
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                          "Não tem uma conta? Cadastre-se!"),
+                    ),
                   ),
                 ],
               ),

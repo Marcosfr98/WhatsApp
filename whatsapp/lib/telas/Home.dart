@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import "package:flutter/material.dart";
 
-import 'routes/RouteGenerator.dart';
-import 'Themes/Cores.dart';
-import 'fragments/AbaContatos.dart';
-import 'fragments/AbaConversas.dart';
+import '../routes/RouteGenerator.dart';
+import '../Themes/Cores.dart';
+import '../abas/AbaContatos.dart';
+import '../abas/AbaConversas.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
